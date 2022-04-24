@@ -3,8 +3,6 @@ from folium.plugins import Draw, MousePosition
 import folium, io, sys, json
 
 if __name__ == '__main__':
-
-
     app = QtWidgets.QApplication(sys.argv)
     m = folium.Map(location=[37,128], zoom_start=13)
 
