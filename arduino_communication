@@ -4,13 +4,13 @@ from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets # pip install pyqtwebeng
 from folium.plugins import Draw, MousePosition
 import folium, io, sys, json
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QMainWindow, QLabel
-import serial
 import sys
+import serial
 
 arduino = serial.Serial('COM3', 9600)
-
-# if __name__ == '__main__':
 app = QtWidgets.QApplication(sys.argv)
+
+#####folium
 m = folium.Map(location=[37,128], zoom_start=13)
 
 draw = Draw(
@@ -55,7 +55,9 @@ page = WebEnginePage(view) ### get coords
 view.setPage(page) ### get coords
 view.setHtml(data.getvalue().decode()) # set bytesIO to html for visualzing
 
-# form_class = uic.loadUiType("folium_in_Qt.ui")[0]
+##### folium end
+
+##### Qt widget Layout
 class WindowClass(QMainWindow) :
     def __init__(self) :
         super().__init__()
@@ -71,9 +73,9 @@ class WindowClass(QMainWindow) :
         self.btn1.clicked.connect(self.SendData)
         layout.addWidget(self.btn1)
 
-        # self.btn_stop = QPushButton("STOP")
-        # self.btn_stop.clicked.connect(self.stopVideo)
-        # layout.addWidget(self.btn_stop)
+        self.btn_stop = QPushButton("AddWidgets")
+        # self.btn_stop.clicked.connect()
+        layout.addWidget(self.btn_stop)
 
         self.widget = QWidget()
         self.widget.setLayout(layout)
@@ -82,21 +84,24 @@ class WindowClass(QMainWindow) :
     def SendData(self):
         f = open("stdout.txt", "r")
         for number in f:
-            # longitude = float(number.split(',')[0][1::])
-            # latitude = float(number.split(',')[2][1:-2])
-            longitude = number.split(',')[0][1::]
-            latitude = number.split(',')[1][1:-2]
+            coordinates = number
+            # longitude = number.split(',')[0][1::]
+            # latitude = number.split(',')[1][1:-2]
         f.close()
 
-        arduino.write(longitude.encode('utf-8'))
-        print(longitude,latitude)
+        coordinates = coordinates[1:-2].replace(", ", '.')
+        print(coordinates)
+        arduino.write(coordinates.encode('utf-8'))
 
-        data = arduino.readline()
-        print(data)
-
-
+        time.sleep(1)
+        longitude = arduino.readline().decode().strip()
+        print("longitude : ", longitude)
+        print(type(longitude))
+        latitude = arduino.readline().decode().strip()
+        print("latitude : ", latitude)
+        print(type(latitude))
+        print(longitude, latitude)
 
 w = WindowClass()
 w.show()
 sys.exit(app.exec_())
-
